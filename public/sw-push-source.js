@@ -1,6 +1,13 @@
 // Custom additions layered on top of next-pwa's generated service worker.
-// next-pwa's build step injects the Workbox precache manifest into this file
-// at build time (via the `swSrc` option in next.config.js).
+// next-pwa's build step scans this file for the literal `self.__WB_MANIFEST`
+// and injects the list of files to precache at that exact spot — without it,
+// the build fails with "Can't find self.__WB_MANIFEST in your SW source."
+
+importScripts("https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js");
+
+if (workbox) {
+  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+}
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;
