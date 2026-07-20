@@ -114,17 +114,17 @@ export interface BookingItem {
 // Minimal Supabase Database generic — extend via `supabase gen types typescript`
 // Run: npx supabase gen types typescript --project-id <your-project-ref> > src/types/database.ts
 // after connecting your real project, to get the fully generated version.
+//
+// NOTE: This uses a permissive `Record<string, ...>` shape rather than mixing
+// explicit named keys with an index signature. Mixing the two causes
+// @supabase/supabase-js's generic table lookup to resolve unknown table
+// names (notifications, chat_messages, payments, etc.) to `never`, which
+// breaks `.insert()` / `.update()` calls with a "does not exist in type
+// 'never[]'" build error. Once you generate real types from your live
+// Supabase project, replace this with the full generated file for proper
+// per-table type safety.
 export interface Database {
   public: {
-    Tables: {
-      profiles: { Row: Profile; Insert: Partial<Profile>; Update: Partial<Profile> };
-      farmers: { Row: Farmer; Insert: Partial<Farmer>; Update: Partial<Farmer> };
-      farms: { Row: Farm; Insert: Partial<Farm>; Update: Partial<Farm> };
-      drivers: { Row: Driver; Insert: Partial<Driver>; Update: Partial<Driver> };
-      services: { Row: Service; Insert: Partial<Service>; Update: Partial<Service> };
-      bookings: { Row: Booking; Insert: Partial<Booking>; Update: Partial<Booking> };
-      booking_items: { Row: BookingItem; Insert: Partial<BookingItem>; Update: Partial<BookingItem> };
-      [key: string]: { Row: any; Insert: any; Update: any };
-    };
+    Tables: Record<string, { Row: any; Insert: any; Update: any }>;
   };
 }
